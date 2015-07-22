@@ -93,11 +93,19 @@
 
                 "properties": {
                     "container_port": {
-                        "type": "string"
+                        "type": "integer",
+
+                        "minimum": 0,
+
+                        "maximum": 65535
                     },
 
                     "host_port": {
-                        "type": "string"
+                        "type": "integer",
+
+                        "minimum": 0,
+
+                        "maximum": 65535
                     },
 
                     "address": {
