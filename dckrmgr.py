@@ -137,15 +137,32 @@ class DckrMgr(object):
         return 0
 
     def s(self):
-        print('S')
+        if not 'id' in self.j_cch:
+            print(self.j_cnf['name'] + ' not created')
+            return 1
+
+        self.cli.start(self.j_cch['id'])
+        print('Started ' + self.j_cnf['name'])
         return 0
 
     def t(self):
-        print('T')
+        if not 'id' in self.j_cch:
+            print(self.j_cnf['name'] + ' not created')
+            return 1
+
+        self.cli.stop(self.j_cch['id'])
+        print('Stopped ' + self.j_cnf['name'])
         return 0
 
     def r(self):
-        print('R')
+        if not 'id' in self.j_cch:
+            print(self.j_cnf['name'] + ' not created')
+            return 1
+
+        self.cli.remove_container(container = self.j_cch['id'])
+        self.j_cch.pop('id')
+        print('Removed ' + self.j_cnf['name'])
+
         return 0
 
     def p(self):
