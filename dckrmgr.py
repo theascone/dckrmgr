@@ -82,17 +82,23 @@ class DckrMgr(object):
             links = links
         )
 
-        self.cli.create_container(
-            name = self.j_cnf['name'],
-            image = self.j_cnf['image']['name'] + ':' + self.j_cnf['image']['version'],
-            hostname = self.j_cnf.get('hostname'),
-            environment = environment,
-            volumes = volumes,
-            ports = ports,
-            host_config = host_config
-        )
+        try:
+            self.cli.create_container(
+                name = self.j_cnf['name'],
+                image = self.j_cnf['image']['name'] + ':' + self.j_cnf['image']['version'],
+                hostname = self.j_cnf.get('hostname'),
+                environment = environment,
+                volumes = volumes,
+                ports = ports,
+                host_config = host_config
+            )
+        except docker.errors.APIError as detail:
+            print('Couldn\'t create ' + self.j_cnf['name'] + ':')
+            print(detail)
+            return 1
 
-        print('C')
+        print('Created ' + self.j_cnf['name'])
+
         return 0
 
     def s(self):
