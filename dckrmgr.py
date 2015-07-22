@@ -3,6 +3,7 @@ import sys
 import json
 import docker
 import argparse
+import jsonschema
 
 class DckrMgr(object):
     def __init__(self):
@@ -22,11 +23,19 @@ class DckrMgr(object):
 
         try:
             f_cnf = open(self.p_cnf, 'r')
+            f_sch = open('../dckrcnf.schema.json', 'r')
         except OSError:
             print('Couldn\'t open dckrcnf.json')
             exit(1)
 
         self.j_cnf = json.load(f_cnf)
+        j_sch = json.load(f_sch)
+
+        try:
+            jsonschema.validate(self.j_cnf, j_sch)
+        except jsonschema.exceptions.ValidationError as detail:
+            print(detail.message)
+            exit(1)
 
         for command in args.commands:
             if getattr(self, command)() != 0:
