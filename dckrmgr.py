@@ -95,12 +95,20 @@ class DckrMgr(object):
         port_bindings = {}
 
         for port in self.j_cnf['ports']:
-            ports.append(port['container_port'])
-
-            if 'address' in  port:
-                port_bindings[port['container_port']] = (port['address'], port['host_port'])
+            if 'protocol' in port and port['protocol'] == 'udp':
+                p = (port['container_port'], 'udp')
+                p_hc = str(port['container_port']) + '/udp'
             else:
-                port_bindings[port['container_port']] = port['host_port']
+                p = port['container_port']
+                p_hc = port['container_port']
+
+            if 'address' in port:
+                h = (port['address'], port['host_port'])
+            else:
+                h = port['host_port']
+
+            ports.append(p)
+            port_bindings[p_hc] = h
 
         links = {}
 
