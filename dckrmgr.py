@@ -16,7 +16,7 @@ class DckrMgr(object):
         parser.add_argument('-b', dest='commands', action='append_const', const='b', help='Backup volumes')
         args = parser.parse_args()
 
-        cli = docker.Client('unix://var/run/docker.sock')
+        self.cli = docker.Client('unix://var/run/docker.sock')
 
         self.p_cwd = os.getcwd()
         self.p_cnf = os.path.join(self.p_cwd, 'dckrcnf.json')
@@ -44,6 +44,54 @@ class DckrMgr(object):
         exit(0)
 
     def c(self):
+        environment = {}
+
+        for variable in self.j_cnf['environment']:
+            environment[variable['name']] = variable['value']
+
+        volumes = []
+        binds = {}
+
+        for volume in self.j_cnf['volume']:
+            volumes.append(volume['container_path'])
+
+            binds[os.path.join(self.p_cwd, volume['host_path'])] = {
+                'bind': volume['container_path'],
+                'mode': volume['mode']
+            }
+
+        ports = []
+        port_bindings = {}
+
+        for port in self.j_cnf['port']:
+            ports.append(port['container_port'])
+
+            if 'address' in  port:
+                port_bindings[port['container_port']] = (port['address'], port['host_port'])
+            else:
+                port_bindings[port['container_port']] = port['host_port']
+
+        links = {}
+
+        for link in self.j_cnf['link']:
+            links[link['name']] = link['alias']
+
+        host_config = docker.utils.create_host_config(
+            binds = binds,
+            port_bindings = port_bindings,
+            links = links
+        )
+
+        self.cli.create_container(
+            name = self.j_cnf['name'],
+            image = self.j_cnf['image']['name'] + ':' + self.j_cnf['image']['version'],
+            hostname = self.j_cnf.get('hostname'),
+            environment = environment,
+            volumes = volumes,
+            ports = ports,
+            host_config = host_config
+        )
+
         print('C')
         return 0
 
