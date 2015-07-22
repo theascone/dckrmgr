@@ -20,6 +20,7 @@ class DckrMgr(object):
 
         self.p_cwd = os.getcwd()
         self.p_cnf = os.path.join(self.p_cwd, 'dckrcnf.json')
+        self.p_cch = os.path.join(self.p_cwd, 'dckrcch.json')
 
         try:
             f_cnf = open(self.p_cnf, 'r')
@@ -37,11 +38,35 @@ class DckrMgr(object):
             print(detail.message)
             exit(1)
 
+        try:
+            f_cch = open(self.p_cch, 'x')
+        except OSError:
+            pass
+        else:
+            json.dump({}, f_cch, indent = 4, sort_keys = True)
+
+        try:
+            f_cch = open(self.p_cch, 'r')
+        except OSError:
+            exit(1)
+
+        self.j_cch = json.load(f_cch)
+
+        i_sts = 0
+
         for command in args.commands:
             if getattr(self, command)() != 0:
-                exit(1)
+                i_sts = 1
+                break
 
-        exit(0)
+        try:
+            f_cch = open(self.p_cch, 'w')
+        except OSError:
+            exit(1)
+
+        json.dump(self.j_cch, f_cch, indent = 4, sort_keys = True)
+
+        exit(i_sts)
 
     def c(self):
         environment = {}
