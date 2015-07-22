@@ -18,13 +18,15 @@ class DckrMgr(object):
 
         self.cli = docker.Client('unix://var/run/docker.sock')
 
+        self.p_src = os.path.dirname(os.path.abspath(__file__))
+
         self.p_cwd = os.getcwd()
         self.p_cnf = os.path.join(self.p_cwd, 'dckrcnf.json')
         self.p_cch = os.path.join(self.p_cwd, 'dckrcch.json')
 
         try:
             f_cnf = open(self.p_cnf, 'r')
-            f_sch = open('../dckrcnf.schema.json', 'r')
+            f_sch = open(os.path.join(self.p_src, 'dckrcnf.schema.json'), 'r')
         except OSError:
             print('Couldn\'t open dckrcnf.json')
             exit(1)
