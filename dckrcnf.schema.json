@@ -57,7 +57,7 @@
             "minitems": 0
         },
 
-        "volume": {
+        "volumes": {
             "type": "array",
 
             "items": {
@@ -85,7 +85,7 @@
             "minitems": 0
         },
 
-        "port": {
+        "ports": {
             "type": "array",
 
             "items": {
@@ -121,7 +121,7 @@
             "minitems": 0
         },
 
-        "link": {
+        "links": {
             "type": "array",
 
             "items": {
@@ -148,5 +148,5 @@
 
     "additionalProperties": false,
 
-    "required": ["name", "image", "volume", "port", "link"]
+    "required": ["name", "image", "volumes", "ports", "links"]
 }

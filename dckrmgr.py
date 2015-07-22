@@ -52,7 +52,7 @@ class DckrMgr(object):
         volumes = []
         binds = {}
 
-        for volume in self.j_cnf['volume']:
+        for volume in self.j_cnf['volumes']:
             volumes.append(volume['container_path'])
 
             binds[os.path.join(self.p_cwd, volume['host_path'])] = {
@@ -63,7 +63,7 @@ class DckrMgr(object):
         ports = []
         port_bindings = {}
 
-        for port in self.j_cnf['port']:
+        for port in self.j_cnf['ports']:
             ports.append(port['container_port'])
 
             if 'address' in  port:
@@ -73,7 +73,7 @@ class DckrMgr(object):
 
         links = {}
 
-        for link in self.j_cnf['link']:
+        for link in self.j_cnf['links']:
             links[link['name']] = link['alias']
 
         host_config = docker.utils.create_host_config(
