@@ -1,0 +1,144 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "dckrcnf",
+
+    "description": "Docker container description",
+
+    "type": "object",
+
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+
+        "image": {
+            "type": "object",
+
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+
+                "version": {
+                    "type": "string"
+                }
+            },
+
+            "additionalProperties": false,
+
+            "required": ["name", "version"]
+        },
+
+        "hostname": {
+            "type": "string"
+        },
+
+        "environment": {
+            "type": "array",
+
+            "items": {
+                "type": "object",
+
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+
+                    "value": {
+                        "type": "string"
+                    }
+                },
+
+                "additionalProperties": false,
+
+                "required": ["name", "value"]
+            },
+
+            "minitems": 0
+        },
+
+        "volume": {
+            "type": "array",
+
+            "items": {
+                "type": "object",
+
+                "properties": {
+                    "host_path": {
+                        "type": "string"
+                    },
+
+                    "container_path": {
+                        "type": "string"
+                    },
+
+                    "mode": {
+                        "type": "string"
+                    }
+                },
+
+                "additionalProperties": false,
+
+                "required": ["host_path", "container_path", "mode"]
+            },
+
+            "minitems": 0
+        },
+
+        "port": {
+            "type": "array",
+
+            "items": {
+                "type": "object",
+
+                "properties": {
+                    "container_port": {
+                        "type": "string"
+                    },
+
+                    "host_port": {
+                        "type": "string"
+                    },
+
+                    "address": {
+                        "type": "string"
+                    }
+                },
+
+                "additionalProperties": false,
+
+                "required": ["container_port", "host_port"]
+            },
+
+            "minitems": 0
+        },
+
+        "link": {
+            "type": "array",
+
+            "items": {
+                "type": "object",
+
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+
+                    "alias": {
+                        "type": "string"
+                    }
+                },
+
+                "additionalProperties": false,
+
+                "required": ["name", "alias"]
+            },
+
+            "minitems": 0
+        }
+    },
+
+    "additionalProperties": false,
+
+    "required": ["name", "image", "volume", "port", "link"]
+}
