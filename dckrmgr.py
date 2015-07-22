@@ -172,6 +172,3 @@ class DckrMgr(object):
     def b(self):
         print('B')
         return 0
-
-if __name__ == '__main__':
-    DckrMgr()
