@@ -112,6 +112,12 @@
 
                     "address": {
                         "type": "string"
+                    },
+
+                    "protocol": {
+                        "type": "string",
+
+                        "pattern": "^((tcp)|(udp))(?!(.|\n))"
                     }
                 },
 
