@@ -69,6 +69,10 @@ class DckrMgr(object):
         exit(i_sts)
 
     def c(self):
+        if 'id' in self.j_cch:
+            print(self.j_cnf['name'] + ' already created')
+            return 1
+
         environment = {}
 
         for variable in self.j_cnf['environment']:
@@ -108,7 +112,7 @@ class DckrMgr(object):
         )
 
         try:
-            self.cli.create_container(
+            res = self.cli.create_container(
                 name = self.j_cnf['name'],
                 image = self.j_cnf['image']['name'] + ':' + self.j_cnf['image']['version'],
                 hostname = self.j_cnf.get('hostname'),
@@ -122,7 +126,13 @@ class DckrMgr(object):
             print(detail)
             return 1
 
+        self.j_cch['id'] = res['Id']
+
         print('Created ' + self.j_cnf['name'])
+
+        if res['Warnings'] != None:
+            print('Warnings generated:')
+            print(res['Warnings'])
 
         return 0
 
