@@ -26,12 +26,18 @@ class DckrMgr(object):
 
         try:
             f_cnf = open(self.p_cnf, 'r')
-            f_sch = open(os.path.join(self.p_src, 'dckrcnf.schema.json'), 'r')
         except OSError:
             print('Couldn\'t open dckrcnf.json')
             exit(1)
 
-        self.j_cnf = json.load(f_cnf)
+        f_sch = open(os.path.join(self.p_src, 'dckrcnf.schema.json'), 'r')
+
+        try:
+            self.j_cnf = json.load(f_cnf)
+        except ValueError:
+            print('dckrcnf.json is invalid json')
+            exit(1)
+
         j_sch = json.load(f_sch)
 
         try:
