@@ -91,13 +91,13 @@ class DckrMgr(object):
 
         environment = {}
 
-        for variable in self.j_cnf['environment']:
+        for variable in self.j_cnf.get('environment', {}):
             environment[variable['name']] = variable['value']
 
         volumes = []
         binds = {}
 
-        for volume in self.j_cnf['volumes']:
+        for volume in self.j_cnf.get('volumes', {}):
             volumes.append(volume['container_path'])
 
             binds[os.path.join(self.p_cwd, volume['host_path'])] = {
@@ -108,7 +108,7 @@ class DckrMgr(object):
         ports = []
         port_bindings = {}
 
-        for port in self.j_cnf['ports']:
+        for port in self.j_cnf.get('ports', {}):
             if 'protocol' in port and port['protocol'] == 'udp':
                 p = (port['container_port'], 'udp')
                 p_hc = str(port['container_port']) + '/udp'
@@ -126,7 +126,7 @@ class DckrMgr(object):
 
         links = {}
 
-        for link in self.j_cnf['links']:
+        for link in self.j_cnf.get('links', {}):
             links[link['name']] = link['alias']
 
         host_config = docker.utils.create_host_config(
