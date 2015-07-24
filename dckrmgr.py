@@ -22,7 +22,6 @@ class DckrMgr(object):
 
         self.p_cwd = os.getcwd()
         self.p_cnf = os.path.join(self.p_cwd, 'dckrcnf.json')
-        self.p_cch = os.path.join(self.p_cwd, 'dckrcch.json')
 
         try:
             f_cnf = open(self.p_cnf, 'r')
@@ -54,20 +53,6 @@ class DckrMgr(object):
             print(detail.message)
             exit(1)
 
-        try:
-            f_cch = open(self.p_cch, 'x')
-        except OSError:
-            pass
-        else:
-            json.dump({}, f_cch, indent = 4, sort_keys = True)
-
-        try:
-            f_cch = open(self.p_cch, 'r')
-        except OSError:
-            exit(1)
-
-        self.j_cch = json.load(f_cch)
-
         i_sts = 0
 
         for command in args.commands:
@@ -75,20 +60,9 @@ class DckrMgr(object):
                 i_sts = 1
                 break
 
-        try:
-            f_cch = open(self.p_cch, 'w')
-        except OSError:
-            exit(1)
-
-        json.dump(self.j_cch, f_cch, indent = 4, sort_keys = True)
-
         exit(i_sts)
 
     def c(self):
-        if 'id' in self.j_cch:
-            print(self.j_cnf['name'] + ' already created')
-            return 1
-
         environment = {}
 
         for variable in self.j_cnf.get('environment', {}):
@@ -150,8 +124,6 @@ class DckrMgr(object):
             print(detail)
             return 1
 
-        self.j_cch['id'] = res['Id']
-
         print('Created ' + self.j_cnf['name'])
 
         if res['Warnings'] != None:
@@ -161,32 +133,18 @@ class DckrMgr(object):
         return 0
 
     def s(self):
-        if not 'id' in self.j_cch:
-            print(self.j_cnf['name'] + ' not created')
-            return 1
-
-        self.cli.start(self.j_cch['id'])
+        self.cli.start(self.j_cnf['name'])
         print('Started ' + self.j_cnf['name'])
         return 0
 
     def t(self):
-        if not 'id' in self.j_cch:
-            print(self.j_cnf['name'] + ' not created')
-            return 1
-
-        self.cli.stop(self.j_cch['id'])
+        self.cli.stop(self.j_cnf['name'])
         print('Stopped ' + self.j_cnf['name'])
         return 0
 
     def r(self):
-        if not 'id' in self.j_cch:
-            print(self.j_cnf['name'] + ' not created')
-            return 1
-
-        self.cli.remove_container(container = self.j_cch['id'])
-        self.j_cch.pop('id')
+        self.cli.remove_container(container = self.j_cnf['name'])
         print('Removed ' + self.j_cnf['name'])
-
         return 0
 
     def p(self):
