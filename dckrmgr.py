@@ -10,6 +10,7 @@ commands = {}
 
 def main():
     cli = docker.Client('unix://var/run/docker.sock')
+
     p_src = os.path.dirname(os.path.abspath(__file__))
 
     for file in os.listdir(os.path.join(p_src, 'commands')):
@@ -19,13 +20,15 @@ def main():
             importlib.import_module('commands.' + ext_file[0])
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-D', dest='cwd_root', action='store', default=os.getcwd(), help='Set working directory')
+    parser.add_argument('-R', dest='rec', action='store_true', help='Use dckrsub.json files to recursively apply operations')
 
     for cm in commands.items():
         parser.add_argument('-' + cm[0], dest='commands', action='append_const', const=cm[0], help=cm[1]['help'])
 
     args = parser.parse_args()
 
-    p_cwd = os.getcwd()
+    p_cwd = os.path.join(os.getcwd(), args.cwd_root)
     p_cnf = os.path.join(p_cwd, 'dckrcnf.json')
 
     try:
