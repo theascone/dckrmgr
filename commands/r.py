@@ -1,11 +1,14 @@
-from dckrmgr import commands
+from dckrmgr import cli
+from dckrmgr import m_cmd
 
-def func(cli, p_cwd, j_cnf):
-    cli.remove_container(container = j_cnf['name'])
-    print('Removed ' + j_cnf['name'])
+def func(ctx):
+    cnf = ctx['cnf']
+    cli.remove_container(container = cnf['name'])
+    print('Removed ' + cnf['name'])
     return 0
 
-commands['r'] = {
-    'help': 'Remove container',
-    'func': func
+m_cmd['r'] = {
+    'hlp': 'Remove container',
+    'ord': 'rev',
+    'fnc': func
 }

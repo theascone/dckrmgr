@@ -1,53 +1,63 @@
 import os
 import sys
-import json
 import docker
+import dckrjsn
 import argparse
 import importlib
-import jsonschema
 
-commands = {}
+cli = None
 
-def read_json(pth, sch=None):
-    bsn = os.path.basename(pth)
+p_cwd_top = None
 
-    try:
-        f_jsn = open(pth, 'r')
-    except FileNotFoundError:
-        print('Couldn\'t open ' + bsn + ': Not found')
-        exit(1)
-    except PermissionError:
-        print('Couldn\'t open ' + bsn + ': Insufficient rights')
-        exit(1)
-    except OSError:
-        print('Couldn\'t open ' + bsn)
-        exit(1)
+n_cnf = 'dckrcnf.json'
+n_sub = 'dckrsub.json'
+n_s_cnf = 'dckrcnf.schema.json'
+n_s_sub = 'dckrsub.schema.json'
 
-    try:
-        jsn = json.load(f_jsn)
-    except ValueError:
-        print('Couldn\'t deserialize ' + bsn + ': Invalid json')
-        exit(1)
-    finally:
-        f_jsn.close()
+p_src = os.path.dirname(os.path.abspath(__file__))
+p_s_cnf = os.path.join(p_src, n_s_cnf)
+p_s_sub = os.path.join(p_src, n_s_sub)
 
-    if sch is not None:
-        try:
-            jsonschema.validate(jsn, sch)
-        except jsonschema.exceptions.SchemaError:
-            print('Couldn\'t validate ' + bsn + ': Invalid schema')
-            exit(1)
-        except jsonschema.exceptions.ValidationError as error:
-            print('Couldn\'t accept '+ bsn + ': ' + error.message)
-            exit(1)
+s_cnf = dckrjsn.read_json(p_s_cnf)
+s_sub = dckrjsn.read_json(p_s_sub)
 
-    return jsn
+m_cmd = {}
+
+def addCtx(p_cwd, a_ctx):
+    p_cnf = os.path.join(p_cwd, n_cnf)
+    cnf = dckrjsn.read_json(p_cnf, sch = s_cnf)
+
+    a_ctx.append({
+        'p_cwd': p_cwd,
+        'cnf': cnf
+    })
+
+def recursiveCtx_i(p_cwd, a_ctx):
+    p_sub = os.path.join(p_cwd, n_sub)
+    a_sub = dckrjsn.read_json(p_sub, sch = s_sub)
+
+    for sub in a_sub:
+        if 'folder' in sub:
+            p_cwd_nxt = os.path.join(p_cwd, sub['folder'])
+            recursiveCtx_i(p_cwd_nxt, a_ctx)
+        else:
+            addCtx(p_cwd, a_ctx)
+
+def recursiveCtx():
+    a_ctx = []
+    recursiveCtx_i(p_cwd_top, a_ctx)
+    return a_ctx
+
+def directCtx():
+    a_ctx = []
+    addCtx(p_cwd_top, a_ctx)
+    return a_ctx
 
 def main():
-    cli = docker.Client('unix://var/run/docker.sock')
+    global cli
+    global p_cwd_top
 
-    p_src = os.path.dirname(os.path.abspath(__file__))
-    p_s_cnf = os.path.join(p_src, 'dckrcnf.schema.json')
+    cli = docker.Client('unix://var/run/docker.sock')
 
     for file in os.listdir(os.path.join(p_src, 'commands')):
         ext_file = os.path.splitext(file)
@@ -56,25 +66,31 @@ def main():
             importlib.import_module('commands.' + ext_file[0])
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-D', dest='cwd_root', action='store', default='', help='Set working directory')
+    parser.add_argument('-D', dest='p_cwd_top', action='store', default='', help='Set working directory')
     parser.add_argument('-R', dest='rec', action='store_true', help='Use dckrsub.json files to recursively apply operations')
 
-    for cm in commands.items():
-        parser.add_argument('-' + cm[0], dest='commands', action='append_const', const=cm[0], help=cm[1]['help'])
+    for cmd in m_cmd.items():
+        parser.add_argument('-' + cmd[0], dest='a_cmd', action='append_const', const=cmd[0], help=cmd[1]['hlp'])
 
     args = parser.parse_args()
 
-    p_cwd = os.path.join(os.getcwd(), args.cwd_root)
-    p_cnf = os.path.join(p_cwd, 'dckrcnf.json')
+    p_cwd_top = os.path.join(os.getcwd(), args.p_cwd_top)
 
-    j_sch = read_json(p_s_cnf)
-    j_cnf = read_json(p_cnf, j_sch)
+    if args.rec:
+        a_ctx = recursiveCtx()
+    else:
+        a_ctx = directCtx()
 
-    i_sts = 0
+    for cmd in args.a_cmd:
+        if m_cmd[cmd]['ord'] == 'nrm':
+            i_ctx = a_ctx
+        elif m_cmd[cmd]['ord'] == 'rev':
+            i_ctx = reversed(a_ctx)
+        else:
+            exit(1)
 
-    for command in args.commands:
-        if commands[command]['func'](cli, p_cwd, j_cnf) != 0:
-            i_sts = 1
-            break
+        for ctx in i_ctx:
+            if m_cmd[cmd]['fnc'](ctx) != 0:
+                exit(1)
 
-    exit(i_sts)
+    exit(0)

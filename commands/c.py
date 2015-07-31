@@ -1,18 +1,22 @@
-from dckrmgr import commands
+from dckrmgr import cli
+from dckrmgr import m_cmd
 
 import os
 import docker
 
-def func(cli, p_cwd, j_cnf):
+def func(ctx):
+    cnf = ctx['cnf']
+    p_cwd = ctx['p_cwd']
+
     environment = {}
 
-    for variable in j_cnf.get('environment', {}):
+    for variable in cnf.get('environment', {}):
         environment[variable['name']] = variable['value']
 
     volumes = []
     binds = {}
 
-    for volume in j_cnf.get('volumes', {}):
+    for volume in cnf.get('volumes', {}):
         volumes.append(volume['container_path'])
 
         binds[os.path.join(p_cwd, volume['host_path'])] = {
@@ -23,7 +27,7 @@ def func(cli, p_cwd, j_cnf):
     ports = []
     port_bindings = {}
 
-    for port in j_cnf.get('ports', {}):
+    for port in cnf.get('ports', {}):
         if 'protocol' in port and port['protocol'] == 'udp':
             p = (port['container_port'], 'udp')
             p_hc = str(port['container_port']) + '/udp'
@@ -41,7 +45,7 @@ def func(cli, p_cwd, j_cnf):
 
     links = {}
 
-    for link in j_cnf.get('links', {}):
+    for link in cnf.get('links', {}):
         links[link['name']] = link['alias']
 
     host_config = docker.utils.create_host_config(
@@ -52,20 +56,20 @@ def func(cli, p_cwd, j_cnf):
 
     try:
         res = cli.create_container(
-            name = j_cnf['name'],
-            image = j_cnf['image']['name'] + ':' + j_cnf['image']['version'],
-            hostname = j_cnf.get('hostname'),
+            name = cnf['name'],
+            image = cnf['image']['name'] + ':' + cnf['image']['version'],
+            hostname = cnf.get('hostname'),
             environment = environment,
             volumes = volumes,
             ports = ports,
             host_config = host_config
         )
     except docker.errors.APIError as detail:
-        print('Couldn\'t create ' + j_cnf['name'] + ':')
+        print('Couldn\'t create ' + cnf['name'] + ':')
         print(detail)
         return 1
 
-    print('Created ' + j_cnf['name'])
+    print('Created ' + cnf['name'])
 
     if res['Warnings'] != None:
         print('Warnings generated:')
@@ -73,7 +77,8 @@ def func(cli, p_cwd, j_cnf):
 
     return 0
 
-commands['c'] = {
-    'help': 'Create container',
-    'func': func
+m_cmd['c'] = {
+    'hlp': 'Create container',
+    'ord': 'nrm',
+    'fnc': func
 }

@@ -1,11 +1,14 @@
-from dckrmgr import commands
+from dckrmgr import cli
+from dckrmgr import m_cmd
 
-def func(cli, p_cwd, j_cnf):
-    cli.stop(j_cnf['name'])
-    print('Stopped ' + j_cnf['name'])
+def func(ctx):
+    cnf = ctx['cnf']
+    cli.stop(cnf['name'])
+    print('Stopped ' + cnf['name'])
     return 0
 
-commands['t'] = {
-    'help': 'Stop container',
-    'func': func
+m_cmd['t'] = {
+    'hlp': 'Stop container',
+    'ord': 'rev',
+    'fnc': func
 }
