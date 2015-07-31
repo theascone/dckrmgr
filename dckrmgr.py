@@ -8,6 +8,41 @@ import jsonschema
 
 commands = {}
 
+def read_json(pth, sch=None):
+    bsn = os.path.basename(pth)
+
+    try:
+        f_jsn = open(pth, 'r')
+    except FileNotFoundError:
+        print('Couldn\'t open ' + bsn + ': Not found')
+        exit(1)
+    except PermissionError:
+        print('Couldn\'t open ' + bsn + ': Insufficient rights')
+        exit(1)
+    except OSError:
+        print('Couldn\'t open ' + bsn)
+        exit(1)
+
+    try:
+        jsn = json.load(f_jsn)
+    except ValueError:
+        print('Couldn\'t deserialize ' + bsn + ': Invalid json')
+        exit(1)
+    finally:
+        f_jsn.close()
+
+    if sch is not None:
+        try:
+            jsonschema.validate(jsn, sch)
+        except jsonschema.exceptions.SchemaError:
+            print('Couldn\'t validate ' + bsn + ': Invalid schema')
+            exit(1)
+        except jsonschema.exceptions.ValidationError as error:
+            print('Couldn\'t accept '+ bsn + ': ' + error.message)
+            exit(1)
+
+    return jsn
+
 def main():
     cli = docker.Client('unix://var/run/docker.sock')
 
@@ -31,35 +66,8 @@ def main():
     p_cwd = os.path.join(os.getcwd(), args.cwd_root)
     p_cnf = os.path.join(p_cwd, 'dckrcnf.json')
 
-    try:
-        f_cnf = open(p_cnf, 'r')
-    except OSError:
-        print('Couldn\'t open dckrcnf.json')
-        exit(1)
-
-    try:
-        f_sch = open(os.path.join(p_src, 'dckrcnf.schema.json'), 'r')
-    except OSError:
-        print('Couldn\'t open dckrcnf.schema.json')
-        exit(1)
-
-    try:
-        j_cnf = json.load(f_cnf)
-    except ValueError:
-        print('dckrcnf.json is invalid json')
-        exit(1)
-
-    try:
-        j_sch = json.load(f_sch)
-    except ValueError:
-        print('dckrcnf.schema.json is invalid json')
-        exit(1)
-
-    try:
-        jsonschema.validate(j_cnf, j_sch)
-    except jsonschema.exceptions.ValidationError as detail:
-        print(detail.message)
-        exit(1)
+    j_sch = read_json(os.path.join(p_src, 'dckrcnf.schema.json'))
+    j_cnf = read_json(p_cnf, j_sch)
 
     i_sts = 0
 
