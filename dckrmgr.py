@@ -20,7 +20,7 @@ def main():
             importlib.import_module('commands.' + ext_file[0])
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-D', dest='cwd_root', action='store', default=os.getcwd(), help='Set working directory')
+    parser.add_argument('-D', dest='cwd_root', action='store', default='', help='Set working directory')
     parser.add_argument('-R', dest='rec', action='store_true', help='Use dckrsub.json files to recursively apply operations')
 
     for cm in commands.items():
