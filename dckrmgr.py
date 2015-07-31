@@ -47,6 +47,7 @@ def main():
     cli = docker.Client('unix://var/run/docker.sock')
 
     p_src = os.path.dirname(os.path.abspath(__file__))
+    p_s_cnf = os.path.join(p_src, 'dckrcnf.schema.json')
 
     for file in os.listdir(os.path.join(p_src, 'commands')):
         ext_file = os.path.splitext(file)
@@ -66,7 +67,7 @@ def main():
     p_cwd = os.path.join(os.getcwd(), args.cwd_root)
     p_cnf = os.path.join(p_cwd, 'dckrcnf.json')
 
-    j_sch = read_json(os.path.join(p_src, 'dckrcnf.schema.json'))
+    j_sch = read_json(p_s_cnf)
     j_cnf = read_json(p_cnf, j_sch)
 
     i_sts = 0
