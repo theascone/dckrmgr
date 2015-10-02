@@ -17,7 +17,8 @@ function search() {
 
 function part() {
     #echo "part() $*" 1>&2
-    cut --delimiter=':' --fields=$2 <<< "$1"
+    local delim=${$3:-':'}
+    cut --delimiter="$delim" --fields=$2 <<< "$1"
 }
 
 indent="  "
@@ -85,7 +86,7 @@ function arr() {
       last=true
       shift
     fi
-    local arr_name="$1" arr_value="$2" elem1="$3" elem2="$4" elem3="$5" elem3def="$6"
+    local arr_name="$1" arr_value="$2" delim="$3" elem1="$4" elem2="$5" elem3="$6" elem3def="$7"
     local part1 part2 part3 Values Values_length
     
     [ -n "$arr_value" ] && begin_arr "$arr_name"
@@ -102,10 +103,10 @@ function arr() {
       val="${Values[$i]}"
       
       begin_elem
-      part1="`part $val 1`"
+      part1="`part "$val" 1 "$delim"`"
       [ "$cut_pwd" == true ] && part1=`sed -e 's/$pwd\///I' <<< "$part1"`
-      part2="`part $val 2`"
-      part3="`part $val 3`"
+      part2="`part "$val" 2 "$delim"`"
+      part3="`part "$val" 3 "$delim"`"
       
       elem "$elem1" "$part1"        
       if [ -n "$elem3" ]; then
@@ -161,15 +162,15 @@ output "Hostname" "$host"
 
 env=`search "-e"`
 output "\nENV" "\n$env\n"
-arr "environment" "$env" "name" "value"
+arr "environment" "$env" "=" "name" "value"
 
 vol=`search "-v"`
 output "Volumes" "\n$vol\n"
-arr --cut-pwd "volumes" "$vol" "host_path" "container_path" "mode" "rw"
+arr --cut-pwd "volumes" "$vol" ":" "host_path" "container_path" "mode" "rw"
 
 links=`search "--link"`
 output "Links" "\n$links\n"
-arr -l "links" "$links" "name" "alias"
+arr -l "links" "$links" ":" "name" "alias"
 
 json+='}'
 
