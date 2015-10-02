@@ -15,7 +15,7 @@ ln -s /usr/local/src/dckr/dckrmgr /usr/local/bin/dckrmgr
 ### Usage
 
 #### Dckrcnf.json
-Example:
+**Example:**
 ```
 {
     "name": "phabricator",
@@ -68,12 +68,12 @@ Example:
 }
 
 ```
-Equivalents to Docker CLI
+**Equivalents to Docker CLI:**
 <table>
     <tr>
-        <td>**Dckrcnf**</td>
-        <td>**Docker CLI**</td>
-        <td>**Comment**</td>
+        <td><b>Dckrcnf</b></td>
+        <td><b>Docker CLI</b></td>
+        <td><b>Comment</b></td>
     </tr>
     <tr>
         <td>name</td>
@@ -112,3 +112,19 @@ Equivalents to Docker CLI
     </tr>
 
 </table>
+
+
+### dckrmgr
+```
+dckrmgr [-h] [-D P_CWD_TOP] [-R] [-t] [-r] [-c] [-s]
+
+optional arguments:
+  -h, --help    show this help message and exit
+  -D P_CWD_TOP  Set working directory
+  -R            Use dckrsub.json files to recursively apply operations
+  -t            Stop container
+  -r            Remove container
+  -c            Create container
+  -s            Start container
+
+```
