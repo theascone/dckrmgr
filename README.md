@@ -16,4 +16,57 @@ ln -s /usr/local/src/dckr/dckrmgr /usr/local/bin/dckrmgr
 
 ## Dckrcnf.json
 Example:
-TODO...
+```
+{
+    "name": "phabricator",
+
+    "image": {
+        "name": "theascone/docker_phabricator",
+        "version": "latest"
+    },
+
+    "hostname": "phabricator.weiltoast.de",
+
+    "environment": [
+        {
+            "name": "MYSQL_USER",
+              "value": "phabricator"
+        },
+        {
+            "name": "MYSQL_PASS",
+            "value": "xyz"
+        }
+    ],
+    "volumes": [
+        {
+            "host_path": "var_log",
+            "container_path": "/var/log",
+            "mode": "rw"
+        },
+        {
+            "host_path": "/var/run/docker.sock",
+            "container_path": "/tmp/docker.sock",
+            "mode": "ro"
+        }
+    ],
+    "ports": [
+        {
+            "container_port": 22,
+            "host_port": 22
+        },
+        {
+            "container_port": 22280,
+            "host_port": 22280
+        }
+    ],
+    "links": [
+        {
+            "name": "mysql_phabricator",
+            "alias": "mysql"
+        }
+    ]
+}
+
+```
+
+
