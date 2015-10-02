@@ -174,4 +174,4 @@ arr -l "links" "$links" "name" "alias"
 json+='}'
 
 output "Json" "\n"
-echo "$json"
+echo -e "$json"
