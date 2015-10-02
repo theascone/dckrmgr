@@ -1,10 +1,10 @@
 # dckrmgr
-## Prerequisites
+### Prerequisites
 The easiest way ist through [pip3](https://pypi.python.org/pypi/pip) (Ubuntu: `apt-get install python3-pip`):
 * [docker-py](https://github.com/docker/docker-py): `pip3 install docker-py`
 * [jsonschema](https://pypi.python.org/pypi/jsonschema): `pip3 install jsonschema`
 
-## Installation
+### Installation
 ```
 git clone git@github.com:theascone/dckrmgr.git
 mkdir -p /usr/local/src/dckr
@@ -12,9 +12,9 @@ mv dckrmgr/* /usr/local/src/dckr
 ln -s /usr/local/src/dckr/dckrmgr /usr/local/bin/dckrmgr
 ```
 
-## Usage
+### Usage
 
-## Dckrcnf.json
+#### Dckrcnf.json
 Example:
 ```
 {
@@ -68,5 +68,47 @@ Example:
 }
 
 ```
+Equivalents to Docker CLI
+<table>
+    <tr>
+        <td>**Dckrcnf**</td>
+        <td>**Docker CLI**</td>
+        <td>**Comment**</td>
+    </tr>
+    <tr>
+        <td>name</td>
+        <td>--name</td>
+    </tr>
+    <tr>
+      <td>
+      image(name, version)
+      </td>
+      <td>name:version</td>
+    </tr>
+    <tr>
+      <td>hostname</td>
+      <td>--hostname (-h)</td>
+    </tr>
+    <tr>
+      <td>environment[(name, value)]</td>
+      <td>--env (-e)</td>
+      <td>Json Array</td>
+    </tr>
+    <tr>
+      <td>volumes[(host_path, container_path, mode)]</td>
+      <td>--volume (-v) host_path:container_path:mode</td>
+      <td>host_path can be relative to location of dckrcnf.json</td>
+      <td>Json Array</td>
+    </tr>
+    <tr>
+      <td>ports[(container_port, host_port)]</td>
+      <td>--publish (-p) host_port:container_port</td>
+      <td>Json Array</td>
+    </tr>
+    <tr>
+      <td>links[(name, alias)]</td>
+      <td>--link name:alias</td>
+      <td>Json Array</td>
+    </tr>
 
-
+</table>
