@@ -144,7 +144,7 @@ name=`search "--name"`
 output "Name" "$name"
 add "name" "$name"
 
-img_temp=`grep -P -v "(?<=-)[[:alnum:]]+ [^\s]+" <<< "$comm" | sed -n 2p`
+img_temp=`grep -P -v "(?<=-)[[:alnum:]]+ [^\s]+" <<< "$comm" | sed -n 2p | cut -d ' ' -f 1`
 img=`part "$img_temp" 1`
 ver=`part "$img_temp" 2`
 [ -n "$ver" ] && ver=latest
