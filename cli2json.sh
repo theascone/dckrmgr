@@ -17,7 +17,7 @@ function search() {
 
 function part() {
     #echo "part() $*" 1>&2
-    local delim=${$3:-':'}
+    local delim="${3:-:}"
     cut --delimiter="$delim" --fields=$2 <<< "$1"
 }
 
