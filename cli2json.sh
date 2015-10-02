@@ -130,10 +130,10 @@ output() {
   if [ "$1" == "-n" ]; then
     shift
     text="$bldwht""$1: $txtrst""$2"
-    echo -e -n "$text"
+    echo -e -n "$text" 1>&2
   else
     text="$bldwht""$1: $txtrst""$2"
-    echo -e "$text"
+    echo -e "$text" 1>&2
   fi
 }
 
