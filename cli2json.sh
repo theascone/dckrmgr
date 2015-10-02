@@ -7,7 +7,7 @@ else
 fi
 
 function search() {
-    echo "search() $*"
+    echo "search() $*" 1>&2
     val=`grep -Po "(?<=$1 ).*(?= )"  <<< "$comm"`
     if [ -z "$val" ] && [ -n "$2" ]; then
         val=`grep -Po "(?<=$2 ).*(?= )"  <<< "$comm"`
@@ -16,14 +16,14 @@ function search() {
 }
 
 function part() {
-    echo "part() $*"
+    echo "part() $*" 1>&2
     cut --delimiter=':' --fields=$2 <<< "$1"
 }
 
 indent="  "
 hspace="\n\n"
 function add() {
-    echo "add() $*"
+    echo "add() $*" 1>&2
     if [ "$1" == "-l" ]; then
       shift
       [ -n "$3" ] && c_hspace="$3" || c_hspace="$hspace"
@@ -75,7 +75,7 @@ function end_arr() {
 }
 
 function arr() {
-    echo "arr() $*"
+    echo "arr() $*" 1>&2
     local cut_pwd=false last=false
     if [ "$1" == "--cut-pwd" ]; then
       cut_pwd=true
@@ -145,8 +145,8 @@ output "Name" "$name"
 add "name" "$name"
 
 img_temp=`grep -P -v "(?<=-)[[:alnum:]]+ [^\s]+" <<< "$comm" | sed -n 2p`
-img=`part $img_temp 1`
-ver=`part $img_temp 2`
+img=`part "$img_temp" 1`
+ver=`part "$img_temp" 2`
 [ -n "$ver" ] && ver=latest
 output -n "Image" "$img, "
 output "Version" "$ver"
