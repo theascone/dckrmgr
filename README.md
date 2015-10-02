@@ -11,3 +11,9 @@ mkdir -p /usr/local/src/dckr
 mv dckrmgr/* /usr/local/src/dckr
 ln -s /usr/local/src/dckr/dckrmgr /usr/local/bin/dckrmgr
 ```
+
+## Usage
+
+## Dckrcnf.json
+Example:
+TODO...
