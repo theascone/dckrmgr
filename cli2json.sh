@@ -89,13 +89,16 @@ function arr() {
     local arr_name="$1" arr_value="$2" delim="$3" elem1="$4" elem2="$5" elem3="$6" elem3def="$7"
     local part1 part2 part3 Values Values_length
     
-    [ -n "$arr_value" ] && begin_arr "$arr_name"
+    
+    begin_arr "$arr_name"
     
     Values=()
-    while read val
-    do
-        Values+=("$val")
-    done <<< "$arr_value"
+    if [ -n "$arr_value" ]; then
+      while read val
+      do
+          Values+=("$val")
+      done <<< "$arr_value"
+    fi
     
     Values_length=${#Values[@]}
     for (( i=0; i < $Values_length; i++ ));
@@ -120,9 +123,7 @@ function arr() {
       [ $i -lt $(($Values_length-1)) ] && end_elem || end_elem -l
     done
       
-    if [ -n "$arr_value" ];then
-      [ "$last" == true ] && end_arr -l || end_arr
-    fi
+    [ "$last" == true ] && end_arr -l || end_arr
 }
 output() {
   local text
