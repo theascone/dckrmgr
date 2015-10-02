@@ -8,9 +8,9 @@ fi
 
 function search() {
     #echo "search() $*" 1>&2
-    val=`grep -Po "(?<=$1 ).*(?= )"  <<< "$comm"`
+    val=`grep -Po "(?<=$1 )\S+"  <<< "$comm"`
     if [ -z "$val" ] && [ -n "$2" ]; then
-        val=`grep -Po "(?<=$2 ).*(?= )"  <<< "$comm"`
+        val=`grep -Po "(?<=$2 )\S+"  <<< "$comm"`
     fi
     echo "$val"
 }
