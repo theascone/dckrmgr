@@ -7,6 +7,7 @@ else
 fi
 
 function search() {
+    echo "search() $*"
     val=`grep -Po "(?<=$1 ).*(?= )"  <<< "$comm"`
     if [ -z "$val" ] && [ -n "$2" ]; then
         val=`grep -Po "(?<=$2 ).*(?= )"  <<< "$comm"`
@@ -15,12 +16,14 @@ function search() {
 }
 
 function part() {
-    cut -d ':' -f $2 <<< "$1"
+    echo "part() $*"
+    cut --delimiter=':' --fields=$2 <<< "$1"
 }
 
 indent="  "
 hspace="\n\n"
 function add() {
+    echo "add() $*"
     if [ "$1" == "-l" ]; then
       shift
       [ -n "$3" ] && c_hspace="$3" || c_hspace="$hspace"
@@ -72,6 +75,7 @@ function end_arr() {
 }
 
 function arr() {
+    echo "arr() $*"
     local cut_pwd=false last=false
     if [ "$1" == "--cut-pwd" ]; then
       cut_pwd=true
