@@ -48,7 +48,7 @@ def func(ctx):
     for link in cnf.get('links', {}):
         links[link['name']] = link['alias']
 
-    host_config = docker.utils.create_host_config(
+    host_config = cli.create_host_config(
         binds = binds,
         port_bindings = port_bindings,
         links = links
